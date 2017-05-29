@@ -8,136 +8,130 @@ from isolation import Board
 class SearchTimeout(Exception):
     """Subclass base exception for code clarity. """
     pass
+def open_move_score(game, player):
+    """The basic evaluation function described in lecture that outputs a score
+    equal to the number of moves open for your computer player on the board.
 
+    Parameters
+    ----------
+    game : `isolation.Board`
+        An instance of `isolation.Board` encoding the current state of the
+        game (e.g., player locations and blocked cells).
 
-class CustomEvalFn:
-    def __init__(self):
-        pass
-        
-        
-    def open_move_score(game, player):
-        """The basic evaluation function that outputs a score
-        equal to the number of moves open for your computer player on the board.
+    player : hashable
+        One of the objects registered by the game object as a valid player.
+        (i.e., `player` should be either game.__player_1__ or
+        game.__player_2__).
 
-        Parameters
-        ----------
-        game : `isolation.Board`
-            An instance of `isolation.Board` encoding the current state of the
-            game (e.g., player locations and blocked cells).
+    Returns
+    ----------
+    float
+        The heuristic value of the current game state
+    """
+    if game.is_loser(player):
+        return float("-inf")
 
-        player : hashable
-            One of the objects registered by the game object as a valid player.
-            (i.e., `player` should be either game.__player_1__ or
-            game.__player_2__).
+    if game.is_winner(player):
+        return float("inf")
 
-        Returns
-        ----------
-        float
-            The heuristic value of the current game state
-        """
-        if game.is_loser(player):
-            return float("-inf")
-
-        if game.is_winner(player):
-            return float("inf")
-
-        return float(len(game.get_legal_moves(player)))
+    return float(len(game.get_legal_moves(player)))
 
     
-    def custom_score(game, player):
-        """Calculate the heuristic value of a game state from the point of view
-        of the given player.
+def custom_score(game, player):
+    """The basic evaluation function that outputs a score
+    equal to the number of moves open for your computer player on the board.
 
-        This should be the best heuristic function for your project submission.
+    Parameters
+    ----------
+    game : `isolation.Board`
+        An instance of `isolation.Board` encoding the current state of the
+        game (e.g., player locations and blocked cells).
 
-        Note: this function is called from within a Player instance as
-        `self.score()`. It is not called directly.
+    player : hashable
+        One of the objects registered by the game object as a valid player.
+        (i.e., `player` should be either game.__player_1__ or
+        game.__player_2__).
 
-        Parameters
-        ----------
-        game : `isolation.Board`
-            An instance of `isolation.Board` encoding the current state of the
-            game (e.g., player locations and blocked cells).
+    Returns
+    ----------
+    float
+        The heuristic value of the current game state
+    """
+    if game.is_loser(player):
+        return float("-inf")
 
-        player : object
-            A player instance in the current game (i.e., an object corresponding to
-            one of the player objects `game.__player_1__` or `game.__player_2__`.)
+    if game.is_winner(player):
+        return float("inf")
 
-        Returns
-        -------
-        float
-            The heuristic value of the current game state to the specified player.
-        """
-        if game.is_loser(player):
-            return float("-inf")
+    return float(len(game.get_legal_moves(player)))
 
-        if game.is_winner(player):
-            return float("inf")
+    
+def custom_score_2(game, player):
+    """Calculate the heuristic value of a game state from the point of view
+    of the given player.
 
-        return float(len(game.get_legal_moves(player)))
+    This should be the best heuristic function for your project submission.
 
+    Note: this function is called from within a Player instance as
+    `self.score()`. It is not called directly.
 
+    Parameters
+    ----------
+    game : `isolation.Board`
+        An instance of `isolation.Board` encoding the current state of the
+        game (e.g., player locations and blocked cells).
 
-    def custom_score_2(self, game, maximize=True):
-        """Calculate the heuristic value of a game state from the point of view
-        of the given player. This is a variation of the `custom_score()` function.
+    player : object
+        A player instance in the current game (i.e., an object corresponding to
+        one of the player objects `game.__player_1__` or `game.__player_2__`.)
 
-        Note: this function is called from within a Player instance as
-        `self.score()`. It is not called directly.
+    Returns
+    -------
+    float
+        The heuristic value of the current game state to the specified player.
+    """
+    if game.is_loser(player):
+        return float("-inf")
 
-        Parameters
-        ----------
-        game : `isolation.Board`
-            An instance of `isolation.Board` encoding the current state of the
-            game (e.g., player locations and blocked cells).
+    if game.is_winner(player):
+        return float("inf")
 
-        player : object
-            A player instance in the current game (i.e., an object corresponding to
-            one of the player objects `game.__player_1__` or `game.__player_2__`.)
-
-        Returns
-        -------
-        float
-            The heuristic value of the current game state to the specified player.
-        """
-        if maximize:
-            score_fn = game.get_legal_moves().__len__()
-        else:
-            score_fn = game.get_opponent_moves().__len__()
-        return score_fn
+    own_moves = len(game.get_legal_moves(player))
+    opp_moves = len(game.get_legal_moves(game.get_opponent(player)))
+    return float(own_moves - opp_moves)
 
 
-    def custom_score_3(game, player):
-        """Calculate the heuristic value of a game state from the point of view
-        of the given player. This is a variation of the `custom_score()` function.
+def custom_score_3(game, player):
+    """Calculate the heuristic value of a game state from the point of view
+    of the given player. This is a variation of the `custom_score()` function.
 
-        Note: this function is called from within a Player instance as
-        `self.score()`. It is not called directly.
+    Note: this function is called from within a Player instance as
+    `self.score()`. It is not called directly.
 
-        Parameters
-        ----------
-        game : `isolation.Board`
-            An instance of `isolation.Board` encoding the current state of the
-            game (e.g., player locations and blocked cells).
+    Parameters
+    ----------
+    game : `isolation.Board`
+        An instance of `isolation.Board` encoding the current state of the
+        game (e.g., player locations and blocked cells).
 
-        player : object
-            A player instance in the current game (i.e., an object corresponding to
-            one of the player objects `game.__player_1__` or `game.__player_2__`.)
+    player : object
+        A player instance in the current game (i.e., an object corresponding to
+        one of the player objects `game.__player_1__` or `game.__player_2__`.)
 
-        Returns
-        -------
-        float
-            The heuristic value of the current game state to the specified player.
-        """
-        if game.is_loser(player):
-            return float("-inf")
+    Returns
+    -------
+    float
+        The heuristic value of the current game state to the specified player.
+    """
+    if game.is_loser(player):
+        return float("-inf")
 
-        if game.is_winner(player):
-            return float("inf")
+    if game.is_winner(player):
+        return float("inf")
 
-        w, h = game.width / 2., game.height / 2.
-        y, x = game.get_player_location(player)
-        return float((h - y)**2 + (w - x)**2)
+    w, h = game.width / 2., game.height / 2.
+    y, x = game.get_player_location(player)
+    return float((h - y)**2 + (w - x)**2)
 
 
     
@@ -175,9 +169,9 @@ class GreedyPlayer():
     equivalent to a minimax search agent with a search depth of one.
     """
 
-    def __init__(self, score_fn=CustomEvalFn()):
+    def __init__(self, score_fn=open_move_score):
         #self.score = score_fn
-        self.score_fn = score_fn
+        self.score = score_fn
 
     def get_move(self, game, time_left):
         """Select the move from the available legal moves with the highest
@@ -283,10 +277,9 @@ class IsolationPlayer:
         positive value large enough to allow the function to return before the
         timer expires.
     """
-    def __init__(self, search_depth=3, score_fn=CustomEvalFn(), timeout=10.):
+    def __init__(self, search_depth=3, score_fn=custom_score_2, timeout=10.):
         self.search_depth = search_depth
-        #self.score = score_fn
-        self.score_fn = score_fn
+        self.score = score_fn
         self.time_left = None
         self.TIMER_THRESHOLD = timeout
 
@@ -343,12 +336,8 @@ class MinimaxPlayer(IsolationPlayer):
         return best_move
 
         
-    def utility(self, game):
-        """Can be updated if desired"""
-        return self.score_fn.custom_score_2(game)
-
         
-    def minimax(self, game, depth):
+    def minimax(self, game, depth, maximizing_player=True):
         """Implement depth-limited minimax search algorithm as described in the 
         implementation uses the modified version of MINIMAX-DECISION in the AIMA text:
         https://github.com/aimacode/aima-pseudocode/blob/master/md/Minimax-Decision.md
@@ -399,7 +388,7 @@ class MinimaxPlayer(IsolationPlayer):
             print(move)
             gamestate = game.forecast_move(move)
             print(self.time_left())
-            score = self.minimax_minvalue(gamestate, depth, self.time_left)
+            score = self.minimax_minvalue(gamestate, depth, self.time_left, maximizing_player)
             if score > best_score:
                 best_move = move
                 print('best_move', best_move)
@@ -407,34 +396,34 @@ class MinimaxPlayer(IsolationPlayer):
                 print('best_score', best_score)
                 #now_queen = game.get_active_player()
                 best_queen = game.is_winner(self)
-                best_val = game.utility(self)
+                best_val = self.score(gamestate, self)
                 print('best_val', best_val)
-        return best_move, best_queen, best_val
+        return best_move ##, best_queen, best_val
 
         
-    def minimax_maxvalue(self, gamestate, depth, time_left):
-        if depth == 0 or self.time_left() <= 150 or (not gamestate.get_legal_moves()):
-            return self.utility(gamestate)
+    def minimax_maxvalue(self, gamestate, depth, time_left, maximizing_player):
+        if depth == 0 or self.time_left() <= 150 or len(gamestate.get_legal_moves())==0:
+            return self.score(gamestate, self)
 
         moves = gamestate.get_legal_moves()
         best_score = float('-inf')
         for move in moves:
             gamestate = gamestate.forecast_move(move)
-            score = self.minimax_minvalue(gamestate, depth-1, self.time_left)
+            score = self.minimax_minvalue(gamestate, depth-1, self.time_left, False)
             if score > best_score:
                 best_score = score
         return best_score
 
         
-    def minimax_minvalue(self, gamestate, depth, time_left):
-        if depth == 0 or time_left() <= 150  or (not gamestate.get_legal_moves()):
-            return self.utility(gamestate)
+    def minimax_minvalue(self, gamestate, depth, time_left, maximizing_player=True):
+        if depth == 0 or time_left() <= 150  or len(gamestate.get_legal_moves())==0:
+            return self.score(gamestate, self)
 
-        moves = gamestate.get_legal_moves().values()[0]
+        moves = gamestate.get_legal_moves()
         best_score = float('inf')
         for move in moves:
             gamestate = gamestate.forecast_move(move)
-            score = self.minimax_maxvalue(gamestate, depth-1, self.time_left)
+            score = self.minimax_maxvalue(gamestate, depth-1, self.time_left, maximizing_player)
             if score < best_score:
                 best_score = score
         return best_score
@@ -492,9 +481,10 @@ class AlphaBetaPlayer(IsolationPlayer):
 
         # Return the best move from the last completed search iteration
         return best_move
-        
 
-    def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf")):
+    
+        
+    def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf"), maximizing_player=True):
         """Implement depth-limited minimax search with alpha-beta pruning as
         described in the lectures.
 
@@ -552,27 +542,27 @@ class AlphaBetaPlayer(IsolationPlayer):
             print(move)
             gamestate = game.forecast_move(move)
             print(self.time_left())
-            score = self.alphabeta_maxvalue(gamestate, depth, self.time_left, alpha, beta)
+            score = self.alphabeta_minvalue(gamestate, depth, self.time_left, alpha, beta, maximizing_player=True)
             if score > best_score:
-                best_move = move_key
+                best_move = move
                 print('best_move', best_move)
                 best_score = score
                 print('best_score', best_score)
                 #now_queen = game.get_active_player()
-                best_queen = now_queen == game.is_winner(self)
-                best_val = game.utility(gamestate)
+                best_queen = game.is_winner(self)
+                best_val = self.score(gamestate, self)
                 print('best_val', best_val)
-        return best_move, best_queen, best_val
+        return best_move ##, best_queen, best_val
 
 
-    def alphabeta_maxvalue(self, gamestate, depth, time_left, alpha, beta):
-        if depth == 0 or time_left() <= 150 or (not gamestate.get_legal_moves()):
-            return game.utility(self)
+    def alphabeta_maxvalue(self, gamestate, depth, time_left, alpha, beta, maximizing_player):
+        if depth == 0 or time_left() <= 160 or len(gamestate.get_legal_moves())==0:
+            return self.score(gamestate, self)
 
-        moves = gamestate.get_legal_moves().values()[0]
+        moves = gamestate.get_legal_moves()
         for move in moves:
             gamestate = gamestate.forecast_move(move)
-            score = self.alphabeta_minvalue(gamestate, depth-1, time_left, alpha, beta)
+            score = self.alphabeta_minvalue(gamestate, depth-1, time_left, alpha, beta, False)
             #print(move_value[0][1])
             if score > beta:
                 return score
@@ -580,14 +570,14 @@ class AlphaBetaPlayer(IsolationPlayer):
         return score
 
 
-    def alphabeta_minvalue(self, gamestate, depth, time_left, alpha, beta):
-        if depth == 0 or time_left() <= 150  or (not gamestate.get_legal_moves()):
-            return game.utility(self)
+    def alphabeta_minvalue(self, gamestate, depth, time_left, alpha, beta, maximizing_player):
+        if depth == 0 or time_left() <= 160  or len(gamestate.get_legal_moves())==0:
+            return self.score(gamestate, self)
 
         moves = gamestate.get_legal_moves()
         for move in moves:
             gamestate = gamestate.forecast_move(move)
-            score = self.alphabeta_maxvalue(gamestate, depth-1, time_left, alpha, beta)
+            score = self.alphabeta_maxvalue(gamestate, depth-1, time_left, alpha, beta, maximizing_player)
             if score < alpha:
                 return score
             beta = min(score, beta)
