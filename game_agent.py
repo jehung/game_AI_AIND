@@ -440,7 +440,7 @@ class AlphaBetaPlayer(IsolationPlayer):
 
     
         
-    def alphabeta(self, game, depth, alpha=float('inf'), beta=float('-inf'), maximizing_player=True):
+    def alphabeta(self, game, depth, alpha=float('-inf'), beta=float('inf'), maximizing_player=True):
         """Implement depth-limited minimax search with alpha-beta pruning as
         described in the lectures.
 
@@ -487,69 +487,61 @@ class AlphaBetaPlayer(IsolationPlayer):
         """
         
 
-        if self.time_left() < self.TIMER_THRESHOLD:
-            raise SearchTimeout()
-
-        # Get legal moves for active player
-        legal_moves = game.get_legal_moves()
-
-        # Game over terminal test
-        if not legal_moves:
-            # -inf or +inf from point of view of maximizing player
-            return (-1, -1)
-
-        # Search depth reached terminal test
-        if depth == 0:
-            # Heuristic score from point of view of maximizing player
-            return (-1, -1)
-
-
-        # Alpha is the maximum lower bound of possible solutions
-        # Alpha is the highest score so far ("worst" highest score is -inf)
-        
-        # Beta is the minimum upper bound of possible solutions
-        # Beta is the lowest score so far ("worst" lowest score is +inf)
-
+        moves = game.get_legal_moves()
+        # print(game.get_legal_moves().values()[0])
         best_move = None
-        if maximizing_player:
-            best_score = float("-inf")
-            for move in legal_moves:
-                # Forecast_move switches the active player
-                next_state = game.forecast_move(move)
-                score, _ = self.alphabeta(next_state, depth-1, alpha, beta, False)
-                if score > best_score:
-                    best_score, best_move = score, move
-                # Prune if possible
-                if best_score >= beta:
-                    return best_move
-                # Update alpha, if necessary
-                alpha = max(alpha, best_score)
-        
-        else:
-            best_score = float("inf")
-            for move in legal_moves:
-                next_state = game.forecast_move(move)
-                score, _ = self.alphabeta(next_state, depth-1, alpha, beta, True)
-                if score < best_score:
-                    best_score, best_move = score, move
-                # Prune if possible
-                if best_score <= alpha:
-                    return best_move
-                # Update beta, if necessary
-                beta = min(beta, best_score)
-        return best_move
-        '''
+        best_score = float('-inf')
+       
         for move in moves:
+            # 'move' is a tuple of tuples
             gamestate = game.forecast_move(move)
             score = self.alphabeta_maxvalue(gamestate, depth, self.time_left, alpha, beta, maximizing_player)
             if score > best_score:
-                best_socre = score
                 best_move = move
-            if best_score > beta:
-                alpha = best_score
-                best_move = move    
-        '''
+                print('best_move', best_move)
+                best_score = score
+                print('best_score', best_score)
+                
+        return best_move
+
+        
+    def alphabeta_maxvalue(self, game, depth, time_left, alpha, beta, maximizing_player):
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+            
+        if depth == 0 or not game.get_legal_moves():
+            return self.score(game, self)
+
+
+        legal_moves = game.get_legal_moves()    
+        #best_score = float("-inf")
+        for move in legal_moves:
+            # Forecast_move switches the active player
+            next_state = game.forecast_move(move)
+            score = self.alphabeta_minvalue(next_state, depth-1, self.time_left, alpha, beta, False)
+            #score = self.score(game.forecast_move(move), self)
+            if score > beta:
+                return score
+            alpha = max(alpha, score)
+            
+        return score
         
         
-        
-    
+    def alphabeta_minvalue(self, game, depth, time_left, alpha, beta, maximizing_player=True):
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+            
+        if depth == 0 or not game.get_legal_moves():
+            return self.score(game, self)
+
+        legal_moves = game.get_legal_moves()    
+        for move in legal_moves:
+            # Forecast_move switches the active player
+            next_state = game.forecast_move(move)
+            score = self.alphabeta_maxvalue(next_state, depth-1, self.time_left, alpha, beta, True)
+            #score = self.score(game.forecast_move(move), self)
+            if score > alpha:
+                return score
+            beta = min(beta, score)
+            
+        return score
