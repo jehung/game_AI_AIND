@@ -198,7 +198,7 @@ class IsolationPlayer:
         positive value large enough to allow the function to return before the
         timer expires.
     """
-    def __init__(self, search_depth=3, score_fn=custom_score_2, timeout=150.):
+    def __init__(self, search_depth=3, score_fn=custom_score_2, timeout=10.):
         self.search_depth = search_depth
         self.score = score_fn
         self.time_left = None
@@ -389,26 +389,24 @@ class AlphaBetaPlayer(IsolationPlayer):
         """
         self.time_left = time_left
 
-
+        # Initialize the best move so that this function returns something
+        # in case the search fails due to timeout
         best_move = (-1, -1)
 
         if not game.get_legal_moves():
-            return best_move
-
+            return (-1, -1)
 
         try:
-            d = 1
             # The search method call (alpha beta or minimax) should happen in
             # here in order to avoid timeout. The try/except block will
             # automatically catch the exception raised by the search method
             # when the timer gets close to expiring
+            d = 1
             while True:
-                ab_move = self.alphabeta(game, depth=d)
-                if ab_move == (-1, -1):
+                best_move = self.alphabeta(game, depth=d)
+                if best_move == (-1, -1):
                     break
-                best_move = ab_move
                 d += 1
-
 
         except SearchTimeout:
             # Handle any actions required at timeout, if necessary
@@ -473,7 +471,7 @@ class AlphaBetaPlayer(IsolationPlayer):
         if not legal_moves or depth == 0:
             return (-1, -1)
 
-        _, move = self.alphabeta_maxvalue(game, depth, self.time_left, alpha, beta, maximizing_player)
+        score, move = self.alphabeta_maxvalue(game, depth, self.time_left, alpha, beta, maximizing_player)
         return move
 
 
@@ -496,7 +494,8 @@ class AlphaBetaPlayer(IsolationPlayer):
             if score > best_score:
                 best_score = score
                 best_move = move
-                alpha = max(alpha, score)
+                #alpha = max(alpha, score)
+            alpha = max(alpha, best_score)
             if beta <= alpha:
                 break
 
@@ -521,7 +520,8 @@ class AlphaBetaPlayer(IsolationPlayer):
             if score < best_score:
                 best_score = score
                 best_move = move
-                beta = min(beta, score)
+                #beta = min(beta, score)
+            beta = min(beta, best_score)
             if beta <= alpha:
                 break
 
